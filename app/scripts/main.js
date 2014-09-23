@@ -3,20 +3,24 @@
 
 window.authorizations.add( 'api_key', new window.ApiKeyAuthorization( 'api_key', 'special-key', 'header' ) );
 
-var Petstore = new SwaggerApi('http://localhost:8002/api/api-docs', {
+var host = 'localhost:8002';
+// var host = 'petstore.swagger.wordnik.com';
+var Petstore = new SwaggerApi('http://' + host + '/api/api-docs', {
   useJQuery: true,
   success: function() {
-    console.log('Petstore ready!');
+    if (this.ready) {
+      // apparently this is a bug in the petstore app; don't mix form + body paramTypes
+      Petstore.apis.pet.operations.uploadFile.parameters[1].paramType = 'form';
+      console.log( 'Petstore ready!' );
+    }
   }
-} );
-
+});
 
 $( 'form[name="file-upload"]' ).on('submit', function(e) {
   e.preventDefault();
-  var file = new FormData(document.forms.namedItem('file-upload'));
   Petstore.apis.pet.uploadFile({
     'additionalMetadata': $( '#additionalMetadata0' ).val(),
-    'body': file
+    'file': $('#file')[0].files[0]
   }, {
     requestContentType: 'multipart/form-data'
   });
@@ -24,11 +28,9 @@ $( 'form[name="file-upload"]' ).on('submit', function(e) {
 
 $( 'form[name="blob-upload"]' ).on('submit', function(e) {
   e.preventDefault();
-  var file = new FormData();
-  file.append( 'file', new Blob( [ $( '#blob' ).val() ], { type: 'text/plain' } ), 'test.txt' );
   Petstore.apis.pet.uploadFile({
     'additionalMetadata': $( '#additionalMetadata1' ).val(),
-    'body': file
+    'file': new Blob( [ $( '#blob' ).val() ], { type: 'text/plain' } )
   }, {
     requestContentType: 'multipart/form-data'
   });
