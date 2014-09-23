@@ -3,8 +3,8 @@
 
 window.authorizations.add( 'api_key', new window.ApiKeyAuthorization( 'api_key', 'special-key', 'header' ) );
 
-var host = 'localhost:8002';
-// var host = 'petstore.swagger.wordnik.com';
+// var host = 'localhost:8002';
+var host = 'petstore.swagger.wordnik.com';
 var Petstore = new SwaggerApi('http://' + host + '/api/api-docs', {
   useJQuery: true,
   success: function() {
